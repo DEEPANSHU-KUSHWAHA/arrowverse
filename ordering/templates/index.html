@@ -163,6 +163,7 @@
                                     <th>Name</th>
                                     <th>Original Air Date</th>
                                     <th>Source</th>
+                                     <th>Watched</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -181,9 +182,48 @@
                                                 </svg>
                                             </a>
                                         </td>
+                                        <td>
+                                            <input type="checkbox"
+                                                   class="watched-checkbox"
+                                                   data-episode-id="{{ row.series }}-{{ row.episode_id }}"
+                                            />
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
+                            <script>
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i=0;i < ca.length;i++) {
+        let c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.watched-checkbox').forEach(function(checkbox) {
+        const episodeId = checkbox.getAttribute('data-episode-id');
+        // Initialize checkbox state from cookies
+        checkbox.checked = getCookie('watched-' + episodeId) === 'true';
+        checkbox.addEventListener('change', function() {
+            setCookie('watched-' + episodeId, checkbox.checked, 365);
+        });
+    });
+});
+</script>
                         </table>
                     </div>
                 </div>
